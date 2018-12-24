@@ -246,7 +246,7 @@
                 title = 'Unknown'
               }
               else {
-                title = coords.altitude + 'm'
+                title = Math.round(coords.altitude - 619) + 'm'
               }
               user_marker = addMarker(title, coords.latitude, coords.longitude, map, 'https://emojipedia-us.s3.dualstack.us-west-1.amazonaws.com/thumbs/120/twitter/154/airplane_2708.png');
             }
