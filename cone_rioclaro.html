@@ -1,7 +1,7 @@
 <!DOCTYPE html>
 <html>
   <head>
-    <link rel="stylesheet" type="text/css" href="//fonts.googleapis.com/css?family=Lato" />
+    <link rel="stylesheet" type="text/css" href="https://fonts.googleapis.com/css?family=Lato" />
     <script src="https://cdn.jsdelivr.net/npm/lodash@4.17.5/lodash.min.js"></script>
     <script src="https://ajax.googleapis.com/ajax/libs/jquery/2.1.1/jquery.min.js"></script>
     <script src="https://maps.googleapis.com/maps/api/js?key=AIzaSyCcChcoLQse_bFUrJDYLneXiTVmpXtQstk&libraries=geometry,places"></script>
@@ -115,6 +115,12 @@
       glide_performance_output.innerHTML = glide_performance_slider.value;
       var glide_performance = glide_performance_slider.value;
 
+      var gps_options = {
+        enableHighAccuracy: true,
+        timeout: 10000,
+        maximumAge: 5000
+      };
+
       function toRadians (angle) {
         return angle * Math.PI / 180;
       }
@@ -141,8 +147,18 @@
         }
       };
 
-      function addMarker(title, lat, lng, map) {
-        return new google.maps.Marker({
+      function addMarker(title, lat, lng, map, icon_url) {
+        if(typeof icon_url !== 'undefined') {
+          icon = {icon: {url: icon_url,
+                         scaledSize: new google.maps.Size(24, 24)
+                        }
+                 };
+        }
+        else {
+          icon = undefined;
+        }
+
+        return new google.maps.Marker($.extend({
           position: new google.maps.LatLng(lat, lng),
           map: map,
           title: title,
@@ -151,7 +167,8 @@
             color: "white",
             fontSize: "12px"
           }
-        });
+        }, icon)
+        );
       };
 
       function reDrawMap(safety_zones, altitudes, degrees, map, center, wind_speed, wind_direction, glide_speed, glide_performance) {
@@ -213,6 +230,30 @@
         });
       }
 
+      function gps_error(err) {
+        console.warn(`ERROR(${err.code}): ${err.message}`);
+      }
+
+      function getLocation(map) {
+        if (navigator.geolocation) {
+          navigator.geolocation.watchPosition(function(position) {
+            var coords = position.coords;
+            if(typeof user_marker !== 'undefined') {
+              user_marker.setPosition(new google.maps.LatLng(coords.latitude, coords.longitude));
+            }
+            else {
+              if (!coords.altitude) {
+                title = 'Unknown'
+              }
+              else {
+                title = coords.altitude + 'm'
+              }
+              user_marker = addMarker(title, coords.latitude, coords.longitude, map, 'https://emojipedia-us.s3.dualstack.us-west-1.amazonaws.com/thumbs/120/twitter/154/airplane_2708.png');
+            }
+          }, gps_error, gps_options);
+        }
+      }
+
       $(document).ready(function() {
         var center = new google.maps.LatLng(-22.4291879,-47.5618677);
         var map = new google.maps.Map(document.getElementById('map'), {
@@ -221,19 +262,9 @@
           mapTypeId: 'hybrid'
         });
 
-        if (navigator.geolocation) {
-          navigator.geolocation.getCurrentPosition(function(position) {
-            var coords = position.coords;
-        	addMarker('Minha localização', coords.latitude, coords.longitude, map);
-          });
-        }
+        getLocation(map);
 
-        //addMarker('Rampa de vôo livre', -22.509775, -47.898754, map);
-        //addMarker('Pista Bridgestone', -22.570389, -47.977306, map);
-        //addMarker('Trevo de São Pedro', -22.565414, -47.902961, map);
-        //addMarker('Thermas Water Park', -22.642042, -47.857029, map);
-
-        drawSafety(altitudes, degrees, map, center, wind_speed, wind_direction, glide_speed, glide_performance)
+        drawSafety(altitudes, degrees, map, center, wind_speed, wind_direction, glide_speed, glide_performance);
 
         speed_slider.oninput = function() {
             speed_output.innerHTML = this.value;
