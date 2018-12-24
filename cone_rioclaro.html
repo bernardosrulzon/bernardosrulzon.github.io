@@ -221,6 +221,13 @@
           mapTypeId: 'hybrid'
         });
 
+        if (navigator.geolocation) {
+          navigator.geolocation.getCurrentPosition(function(position) {
+            var coords = position.coords;
+            console.log(coords);
+          });
+        }
+
         //addMarker('Aeroporto de São Pedro', -22.582377, -47.897470, map);
         //addMarker('Rampa de vôo livre', -22.509775, -47.898754, map);
         //addMarker('Pista Bridgestone', -22.570389, -47.977306, map);
