@@ -224,11 +224,10 @@
         if (navigator.geolocation) {
           navigator.geolocation.getCurrentPosition(function(position) {
             var coords = position.coords;
-            console.log(coords);
           });
         }
 
-        //addMarker('Aeroporto de São Pedro', -22.582377, -47.897470, map);
+        addMarker('Minha localização', coords.latitude, coords.longitude, map);
         //addMarker('Rampa de vôo livre', -22.509775, -47.898754, map);
         //addMarker('Pista Bridgestone', -22.570389, -47.977306, map);
         //addMarker('Trevo de São Pedro', -22.565414, -47.902961, map);
