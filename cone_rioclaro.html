@@ -12,18 +12,18 @@
       html, body {
           height: 100%;
           width: 100%;
+          margin: 0;
       }
 
       #map {
-          height: 100%;
-          width: 100%;
-          left: 0;
-          position: relative;
-          top: 0;
+        position: absolute;
+        top: 70px;
+        bottom: 0;
+        width: 100%;
       }
 
       div.menu {
-        float: top;
+        height: 70px;
       }
 
       div.wind_speed, div.wind_direction, div.best_glide_speed, div.best_glide_performance {
@@ -147,7 +147,7 @@
       function addMarker(title, lat, lng, map, icon_url) {
         if(typeof icon_url !== 'undefined') {
           icon = {icon: {url: icon_url,
-                         scaledSize: new google.maps.Size(24, 24)
+                         scaledSize: new google.maps.Size(30, 30)
                         }
                  };
         }
@@ -256,7 +256,13 @@
         var map = new google.maps.Map(document.getElementById('map'), {
           zoom: 12,
           center: new google.maps.LatLng(-22.4291879,-47.5618677),
-          mapTypeId: 'hybrid'
+          mapTypeId: 'hybrid',
+          zoomControl: false,
+          mapTypeControl: true,
+          scaleControl: true,
+          streetViewControl: false,
+          rotateControl: false,
+          fullscreenControl: true
         });
 
         getLocation(map);
